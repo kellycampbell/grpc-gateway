@@ -451,11 +451,11 @@ func resolveFullyQualifiedNameToSwaggerNames(messages []string) map[string]strin
 		h := hierarchy(p)
 		for depth := 0; depth < len(h); depth++ {
 			if count(packagesByDepth[depth], h[len(h)-depth:]) == 1 {
-				uniqueNames[p] = strings.Join(h[len(h)-depth-1:], "")
+				uniqueNames[p] = strings.Join(h[len(h)-depth-1:], "_")
 				break
 			}
 			if depth == len(h)-1 {
-				uniqueNames[p] = strings.Join(h, "")
+				uniqueNames[p] = strings.Join(h, "_")
 			}
 		}
 	}
