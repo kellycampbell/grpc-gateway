@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -118,6 +119,8 @@ func DefaultHTTPError(ctx context.Context, mux *ServeMux, marshaler Marshaler, w
 		s = status.New(codes.Unknown, err.Error())
 	}
 
+	fmt.Printf("DefaultHTTPError del transfer-encoding")
+
 	w.Header().Del("Trailer")
 	w.Header().Del("Transfer-Encoding")
 
@@ -182,5 +185,7 @@ func DefaultHTTPError(ctx context.Context, mux *ServeMux, marshaler Marshaler, w
 // DefaultOtherErrorHandler is the default implementation of OtherErrorHandler.
 // It simply writes a string representation of the given error into "w".
 func DefaultOtherErrorHandler(w http.ResponseWriter, _ *http.Request, msg string, code int) {
+	fmt.Printf("DefaultOtherErrorHandler")
+
 	http.Error(w, msg, code)
 }

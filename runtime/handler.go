@@ -32,6 +32,8 @@ func ForwardResponseStream(ctx context.Context, mux *ServeMux, marshaler Marshal
 	}
 	handleForwardResponseServerMetadata(w, mux, md)
 
+	fmt.Printf("setting transfer-encoding in handler\n")
+
 	w.Header().Set("Transfer-Encoding", "chunked")
 	w.Header().Set("Content-Type", marshaler.ContentType())
 	if err := handleForwardResponseOptions(ctx, w, nil, opts); err != nil {
@@ -93,9 +95,11 @@ func ForwardResponseStream(ctx context.Context, mux *ServeMux, marshaler Marshal
 }
 
 func handleForwardResponseServerMetadata(w http.ResponseWriter, mux *ServeMux, md ServerMetadata) {
+	fmt.Printf("handleForwardResponseServerMetadata\n")
 	for k, vs := range md.HeaderMD {
 		if h, ok := mux.outgoingHeaderMatcher(k); ok {
 			for _, v := range vs {
+				fmt.Printf("  %s: %s\n", h, v)
 				w.Header().Add(h, v)
 			}
 		}
@@ -103,16 +107,20 @@ func handleForwardResponseServerMetadata(w http.ResponseWriter, mux *ServeMux, m
 }
 
 func handleForwardResponseTrailerHeader(w http.ResponseWriter, md ServerMetadata) {
+	fmt.Printf("handleForwardResponseTrailerHeader\n")
 	for k := range md.TrailerMD {
 		tKey := textproto.CanonicalMIMEHeaderKey(fmt.Sprintf("%s%s", MetadataTrailerPrefix, k))
+		fmt.Printf("  %s: %s\n", "Trailer", tKey)
 		w.Header().Add("Trailer", tKey)
 	}
 }
 
 func handleForwardResponseTrailer(w http.ResponseWriter, md ServerMetadata) {
+	fmt.Printf("handleForwardResponseTrailer\n")
 	for k, vs := range md.TrailerMD {
 		tKey := fmt.Sprintf("%s%s", MetadataTrailerPrefix, k)
 		for _, v := range vs {
+			fmt.Printf("  %s: %s\n", tKey, v)
 			w.Header().Add(tKey, v)
 		}
 	}
